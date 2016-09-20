@@ -52,3 +52,23 @@ Function New-TwiMLXMLDocument {
 Function New-TwiMLHangup {
     New-XMLElement -Name Hangup
 }
+
+#https://www.twilio.com/docs/api/twiml/record
+Function New-TwiMLRecord {
+    param (
+        $Action,
+        [ValidateSet("GET","POST")]$Method,
+        [ValidateScript({$_ -gt 0})][Int]$Timeout,
+        [ValidateSet(0,1,2,3,4,5,6,7,8,9,"#","*","")]$FinishOnKey,
+        [ValidateScript({$_ -ge 1})]$MaxLength,
+        [Bool]$Transcribe,
+        $TranscribeCallback,
+        [Bool]$PlayBeep,
+        [ValidateSet("trim-silence","do-not-trim")]$Trim
+    )
+    $ParametersToTurnIntoAttributes = $PSBoundParameters
+    $ParametersToTurnIntoAttributes.Remove("InnerElements") | Out-Null
+
+    New-XMLElement -Name Record -Attributes $ParametersToTurnIntoAttributes -InnerElements $InnerElements
+
+}
