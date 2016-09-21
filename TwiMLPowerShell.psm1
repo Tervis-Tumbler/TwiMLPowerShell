@@ -1,4 +1,5 @@
-﻿function New-TwiMLRedirect {
+﻿#https://www.twilio.com/docs/api/twiml
+function New-TwiMLRedirect {
     param (
         [ValidateSet("GET","POST")]$Method,
         $URL
@@ -21,7 +22,6 @@ Function New-TwiMLGather {
     New-XMLElement -Name Gather -Attributes $ParametersToTurnIntoAttributes -InnerElements $InnerElements
 }
 
-#https://www.twilio.com/docs/api/twiml/say
 Function New-TwiMLSay {
     param (
         [ValidateSet("man", "woman", "alice")]$Voice,
@@ -53,14 +53,13 @@ Function New-TwiMLHangup {
     New-XMLElement -Name Hangup
 }
 
-#https://www.twilio.com/docs/api/twiml/record
 Function New-TwiMLRecord {
     param (
-        $Action,
-        [ValidateSet("GET","POST")]$Method,
+        $action,
+        [ValidateSet("GET","POST")]$method,
         [ValidateScript({$_ -gt 0})][Int]$Timeout,
         [ValidateSet(0,1,2,3,4,5,6,7,8,9,"#","*","")]$FinishOnKey,
-        [ValidateScript({$_ -ge 1})]$MaxLength,
+        [ValidateScript({$_ -ge 1})]$maxLength,
         [Bool]$Transcribe,
         $TranscribeCallback,
         [Bool]$PlayBeep,
@@ -70,5 +69,4 @@ Function New-TwiMLRecord {
     $ParametersToTurnIntoAttributes.Remove("InnerElements") | Out-Null
 
     New-XMLElement -Name Record -Attributes $ParametersToTurnIntoAttributes -InnerElements $InnerElements
-
 }
