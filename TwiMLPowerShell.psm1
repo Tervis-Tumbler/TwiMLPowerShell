@@ -1,4 +1,6 @@
-﻿#https://www.twilio.com/docs/api/twiml
+﻿#Requires -modules WebServicesPowerShellProxyBuilder
+
+#https://www.twilio.com/docs/api/twiml
 function New-TwiMLRedirect {
     param (
         [ValidateSet("GET","POST")]$Method,
@@ -20,11 +22,7 @@ Function New-TwiMLGather {
         [Switch]$AsString
     )
 
-    $Attributes = $PSBoundParameters | 
-    ConvertFrom-PSBoundParameters |
-    select -Property * -ExcludeProperty InnerElements,AsString
-
-    New-XMLElement -Name Gather -Attributes $Attributes -InnerElements $InnerElements -AsString:$AsString
+    New-TwiMLXMLElement -Name Gather -Parameters $PSBoundParameters -ExcludeProperty InnerElements,AsString -InnerElements $InnerElements
 }
 
 Function New-TwiMLSay {
@@ -35,11 +33,8 @@ Function New-TwiMLSay {
         [Parameter(Mandatory)]$Message,
         [Switch]$AsString
     )
-    $Attributes = $PSBoundParameters | 
-    ConvertFrom-PSBoundParameters |
-    select -Property * -ExcludeProperty Message,AsString
 
-    New-XMLElement -Name Say -Attributes $Attributes -InnerText $Message -AsString:$AsString
+    New-TwiMLXMLElement -Name Say -Parameters $PSBoundParameters -ExcludeProperty Message,AsString -InnerText $Message
 }
 
 Function New-TwiMLResponse {
@@ -79,17 +74,31 @@ Function New-TwiMLRecord {
         [ValidateSet("trim-silence","do-not-trim")]$Trim,
         [Switch]$AsString
     )
-    $Attributes = $PSBoundParameters | 
-    ConvertFrom-PSBoundParameters |
-    select -Property * -ExcludeProperty InnerElements,AsString
 
-    New-XMLElement -Name Record -Attributes $Attributes -InnerElements $InnerElements -AsString:$AsString
+    New-TwiMLXMLElement -Name Record -Parameters $PSBoundParameters -ExcludeProperty InnerElements,AsString
 }
 
 Function New-TwiMLXMLElement {
+    [cmdletbinding(DefaultParameterSetName='InnerElements')]
     param (
-        $Parameters
+        $Name,
+        $Parameters,
+        $ExcludeProperty,
+        [Parameter(ParameterSetName="InnerElements")]$InnerElements,
+        [Parameter(ParameterSetName="InnerText")]$InnerText
     )
-    New-XMLElement -Name Record -Attributes $Attributes -InnerElements $InnerElements -AsString:$AsString
+    
+    $Attributes = $Parameters | 
+    ConvertFrom-PSBoundParameters |
+    select -Property * -ExcludeProperty $ExcludeProperty |
+    where {$_.psobject.Properties.name -ne "*"} # There is a bug in powershell that returns a property named * when all the properites of the object are excluded
+    #https://github.com/PowerShell/PowerShell/issues/2351
 
+    if ($InnerElements) {
+        New-XMLElement -Name $Name -Attributes $Attributes -InnerElements $InnerElements -AsString:$Parameters["AsString"]
+    } elseif ($InnerText) {
+        New-XMLElement -Name $Name -Attributes $Attributes -InnerText $InnerText -AsString:$Parameters["AsString"]
+    } else {
+        New-XMLElement -Name $Name -Attributes $Attributes -AsString:$Parameters["AsString"]
+    }
 }
