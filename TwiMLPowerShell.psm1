@@ -89,10 +89,7 @@ Function New-TwiMLXMLElement {
     )
     
     $Attributes = $Parameters | 
-    ConvertFrom-PSBoundParameters |
-    select -Property * -ExcludeProperty $ExcludeProperty |
-    where {$_.psobject.Properties.name -ne "*"} # There is a bug in powershell that returns a property named * when all the properites of the object are excluded
-    #https://github.com/PowerShell/PowerShell/issues/2351
+    ConvertFrom-PSBoundParameters -ExcludeProperty $ExcludeProperty -AsHashTable
 
     if ($InnerElements) {
         New-XMLElement -Name $Name -Attributes $Attributes -InnerElements $InnerElements -AsString:$Parameters["AsString"]

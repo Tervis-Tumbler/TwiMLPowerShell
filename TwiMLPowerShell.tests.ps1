@@ -31,6 +31,6 @@ Describe "Integration Test" {
                 )  
             )
         ) |
-        Should Be '<?xml version="1.0" encoding="UTF-8"?><Response><Gather Action="https://www.google.com" Method="POST" Timeout="10" FinishOnKey="#" numDigits="20"><Say Voice="alice">Press 11 for Sales</Say><Say Voice="alice">Press 12 for Marketing</Say></Gather></Response>'
+        Should Be '<?xml version="1.0" encoding="UTF-8"?><Response><Gather Action="https://www.google.com" Method="POST" Timeout="10" FinishOnKey="#" numDigits="20"><Say Voice="alice">Press 11 for Sales</Say><Say>Press 12 for Marketing</Say></Gather></Response>'
     }
 }
